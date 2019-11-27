@@ -1,7 +1,7 @@
 all: homework
 
 homework: homework.c homework.h main.c
-	gcc -o homework homework.c main.c -lpthread -Wall -lm
+	gcc -o homework homework.c main.c -lpthread -Wall -lm -g
 
 .PHONY: clean
 

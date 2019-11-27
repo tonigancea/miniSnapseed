@@ -80,6 +80,21 @@ int find_num_colors(char type) {
 	}
 }
 
+void copyImage(image *source, image *destination) {
+	destination->type[0] = source->type[0];
+	destination->type[1] = source->type[1];
+	destination->width = source->width;
+	destination->height = source->height;
+	destination->max_val = source->max_val;
+
+	free(destination->data);
+	int byte_len = find_num_colors(source->type[1]) * source->width * source->height;
+	destination->data = (char*) malloc(byte_len * sizeof(char));
+	memcpy(destination->data, source->data, byte_len);
+	
+	free(source->data);
+}
+
 void readInput(const char * fileName, image *img) {
 	
 	FILE* fp;
@@ -121,16 +136,19 @@ void writeData(const char * fileName, image *img) {
 	byte_length = img->width * img->height * num_colors;
 	fwrite(img->data, byte_length, sizeof(char), fp);
 
-	// FREE MEMORY FROM IMAGE OUT
-	free(img->data);
-
 	fclose(fp);
-
+	free(img->data);
 }
 
-void resize(image *in, image * out) { 
+void rotate_left(image *in, image * out) {
+	
+}
+
+void resize(image *in, image * out, int resize_fac) { 
 	
 	int num_colors, byte_length;
+
+	resize_factor = resize_fac;
 
 	out->type[0] = in->type[0];
 	out->type[1] = in->type[1];
@@ -165,7 +183,4 @@ void resize(image *in, image * out) {
 		pthread_join(tid[i], NULL);
 	}
 	// the magic ends here
-
-	// FREE MEMORY FROM IMAGE IN
-	free(in->data);
 }

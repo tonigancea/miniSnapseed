@@ -22,6 +22,10 @@ void readInput(const char * fileName, image *img);
 
 void writeData(const char * fileName, image *img);
 
-void resize(image *in, image * out);
+void resize(image *in, image * out, int resize_fac);
+
+void rotate_left(image *in, image * out);
+
+void copyImage(image *source, image *destination);
 
 #endif /* HOMEWORK_H */

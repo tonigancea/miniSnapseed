@@ -1,42 +1,38 @@
 #include "homework.h"
-#include <time.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-//DO NOT MODIFY THIS FILE
 extern int num_threads;
-extern int resize_factor;
+
 int main(int argc, char * argv[]) {
-	//agrv[1] input
-	//argv[2] output
-	//argv[3] resize_factor
-	//argv[4] num_threads
-	if(argc < 5) {
-		printf("Incorrect number of arguments\n");
+
+	if(argc <= 4) {
+		printf("Arguments should look like:\n");
+		printf("./homework input_file output_file num_threads_used command1 ...\n");
+		printf("The available commands are: resize x, rotate_left, rotate_right, flip_vert, flip_hor.\n");
 		exit(-1);
 	}
-//DO NOT MODIFY THIS FILE
-	resize_factor = atoi(argv[3]);
-	num_threads = atoi(argv[4]);
-//DO NOT MODIFY THIS FILE
+
+	num_threads = atoi(argv[3]);
+
 	image input;
-	image output;
-//DO NOT MODIFY THIS FILE
+	image tmp;
+
 	readInput(argv[1], &input);
-//DO NOT MODIFY THIS FILE
-	struct timespec start, finish;
-	double elapsed;
-//DO NOT MODIFY THIS FILE
-	clock_gettime(CLOCK_MONOTONIC, &start);
-	resize(&input, &output);
-	clock_gettime(CLOCK_MONOTONIC, &finish);
-//DO NOT MODIFY THIS FILE
-	elapsed = (finish.tv_sec - start.tv_sec);
-	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-//DO NOT MODIFY THIS FILE
-	printf("%lf\n", elapsed);
-//DO NOT MODIFY THIS FILE
-	writeData(argv[2], &output);
+
+	for (int i = 4; i < argc; i++) {
+		if (strcmp(argv[i],"resize") == 0) {
+			int resize_fact = atoi(argv[i+1]);
+			resize(&input, &tmp, resize_fact);
+			i += 1;
+		} else if (strcmp(argv[i],"rotate_left") == 0) {
+			// rotate_left()
+		}
+		copyImage(&tmp, &input);
+	}
+
+	writeData(argv[2], &input);
 	return 0;
 }
