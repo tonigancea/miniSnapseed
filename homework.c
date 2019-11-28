@@ -25,7 +25,47 @@ int computeKernel(int mat[3][3]) {
 
 }
 
-void* threadFunction(void *var) {
+void* threadFunctionRotateLeft(void *var) {
+	blackbox info = *(blackbox*)var;
+
+	int start = info.start;
+	int end = info.end;
+	image *in = info.in;
+	image *out = info.out;
+	int num_colors = info.num_colors;
+
+	for (int c = 0; c < num_colors; c++) { 	//each color at a time
+		for (int i = start; i < end; i++) {
+			for (int j = 0; j < out->width; j++) {
+				out->data[(i * out->width + j) * num_colors + c] \
+				= in->data[(j * in->width) + (in->width - i - 1) * num_colors + c];
+			}
+		}     
+	}
+	return NULL;
+}
+
+void* threadFunctionRotateRight(void *var) {
+	blackbox info = *(blackbox*)var;
+
+	int start = info.start;
+	int end = info.end;
+	image *in = info.in;
+	image *out = info.out;
+	int num_colors = info.num_colors;
+
+	for (int c = 0; c < num_colors; c++) { 	//each color at a time
+		for (int i = start; i < end; i++) {
+			for (int j = 0; j < out->width; j++) {
+				out->data[(i * out->width + j) * num_colors + c] \
+				= in->data[((in->height - j - 1) * in->width + i) * num_colors + c];
+			}
+		}
+	}
+	return NULL;
+}
+
+void* threadFunctionResize(void *var) {
 	blackbox info = *(blackbox*)var;
 
 	int start = info.start;
@@ -140,8 +180,48 @@ void writeData(const char * fileName, image *img) {
 	free(img->data);
 }
 
-void rotate_left(image *in, image * out) {
-	
+void rotate(image *in, image * out, int direction) {
+	int num_colors, byte_length;
+
+	out->type[0] = in->type[0];
+	out->type[1] = in->type[1];
+	num_colors = find_num_colors(in->type[1]);
+
+	out->width = in->height;
+	out->height = in->width;
+	out->max_val = in->max_val;
+
+	byte_length = out->width * out->height * num_colors;
+
+	out->data = (char*) malloc(byte_length * sizeof(char));
+
+	// shall the magic begin
+	pthread_t tid[num_threads];
+	blackbox info[num_threads];
+
+	for (int i = 0; i < num_threads; i++) {
+		info[i].start = i * out->height / num_threads;
+		info[i].in = in;
+		info[i].out = out;
+		info[i].num_colors = num_colors;
+		if (i == num_threads - 1) {
+			info[i].end = out->height;
+		} else {
+			info[i].end = ((i + 1) * out->height / num_threads);
+		}
+
+		// 0 means left, 1 means right
+		if (direction == 0) {
+			pthread_create(&(tid[i]), NULL, threadFunctionRotateLeft, &(info[i]));	
+		} else {
+			pthread_create(&(tid[i]), NULL, threadFunctionRotateRight, &(info[i]));
+		}
+	}
+
+	for (int i = 0; i < num_threads; i++) {
+		pthread_join(tid[i], NULL);
+	}
+	// the magic ends here
 }
 
 void resize(image *in, image * out, int resize_fac) { 
@@ -176,7 +256,7 @@ void resize(image *in, image * out, int resize_fac) {
 		} else {
 			info[i].end = ((i + 1) * out->height / num_threads);
 		}
-		pthread_create(&(tid[i]), NULL, threadFunction, &(info[i]));
+		pthread_create(&(tid[i]), NULL, threadFunctionResize, &(info[i]));
 	}
 
 	for (int i = 0; i < num_threads; i++) {

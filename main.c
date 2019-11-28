@@ -28,7 +28,11 @@ int main(int argc, char * argv[]) {
 			resize(&input, &tmp, resize_fact);
 			i += 1;
 		} else if (strcmp(argv[i],"rotate_left") == 0) {
-			// rotate_left()
+			// 0 means left
+			rotate(&input, &tmp, 0);
+		} else if (strcmp(argv[i],"rotate_right") == 0) {
+			// 1 means right
+			rotate(&input, &tmp, 1);
 		}
 		copyImage(&tmp, &input);
 	}
