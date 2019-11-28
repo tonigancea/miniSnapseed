@@ -38,7 +38,7 @@ void* threadFunctionRotateLeft(void *var) {
 		for (int i = start; i < end; i++) {
 			for (int j = 0; j < out->width; j++) {
 				out->data[(i * out->width + j) * num_colors + c] \
-				= in->data[(j * in->width) + (in->width - i - 1) * num_colors + c];
+				= in->data[((j * in->width) + (in->width - i - 1)) * num_colors + c];
 			}
 		}     
 	}
