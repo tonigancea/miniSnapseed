@@ -28,11 +28,17 @@ int main(int argc, char * argv[]) {
 			resize(&input, &tmp, resize_fact);
 			i += 1;
 		} else if (strcmp(argv[i],"rotate_left") == 0) {
-			// 0 means left
+			// 0 means rotate left
 			rotate(&input, &tmp, 0);
 		} else if (strcmp(argv[i],"rotate_right") == 0) {
-			// 1 means right
+			// 1 means rotate right
 			rotate(&input, &tmp, 1);
+		} else if (strcmp(argv[i],"flip_vert") == 0) {
+			// 2 means flip vertical
+			rotate(&input, &tmp, 2);
+		} else if (strcmp(argv[i],"flip_hor") == 0) {
+			// 3 means flip horizontal
+			rotate(&input, &tmp, 3);
 		}
 		copyImage(&tmp, &input);
 	}

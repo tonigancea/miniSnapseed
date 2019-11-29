@@ -65,6 +65,46 @@ void* threadFunctionRotateRight(void *var) {
 	return NULL;
 }
 
+void* threadFunctionFlipHor(void *var) {
+	blackbox info = *(blackbox*)var;
+
+	int start = info.start;
+	int end = info.end;
+	image *in = info.in;
+	image *out = info.out;
+	int num_colors = info.num_colors;
+
+	for (int c = 0; c < num_colors; c++) { 	//each color at a time
+		for (int i = start; i < end; i++) {
+			for (int j = 0; j < out->width; j++) {
+				out->data[(i * out->width + j) * num_colors + c] \
+				= in->data[((in->height - i - 1) * in->width + j) * num_colors + c];
+			}
+		}
+	}
+	return NULL;
+}
+
+void* threadFunctionFlipVer(void *var) {
+	blackbox info = *(blackbox*)var;
+
+	int start = info.start;
+	int end = info.end;
+	image *in = info.in;
+	image *out = info.out;
+	int num_colors = info.num_colors;
+
+	for (int c = 0; c < num_colors; c++) { 	//each color at a time
+		for (int i = start; i < end; i++) {
+			for (int j = 0; j < out->width; j++) {
+				out->data[(i * out->width + j) * num_colors + c] \
+				= in->data[(i * in->width + (in->width - j - 1)) * num_colors + c];
+			}
+		}
+	}
+	return NULL;
+}
+
 void* threadFunctionResize(void *var) {
 	blackbox info = *(blackbox*)var;
 
@@ -180,15 +220,21 @@ void writeData(const char * fileName, image *img) {
 	free(img->data);
 }
 
-void rotate(image *in, image * out, int direction) {
+void rotate(image *in, image * out, int type) {
 	int num_colors, byte_length;
 
 	out->type[0] = in->type[0];
 	out->type[1] = in->type[1];
 	num_colors = find_num_colors(in->type[1]);
 
-	out->width = in->height;
-	out->height = in->width;
+	if (type == 0 || type == 1) {
+		out->width = in->height;
+		out->height = in->width;
+	} else {
+		out->width = in->width;
+		out->height = in->height;
+	}
+	
 	out->max_val = in->max_val;
 
 	byte_length = out->width * out->height * num_colors;
@@ -210,11 +256,16 @@ void rotate(image *in, image * out, int direction) {
 			info[i].end = ((i + 1) * out->height / num_threads);
 		}
 
-		// 0 means left, 1 means right
-		if (direction == 0) {
+		// 0 means rotate left, 1 means rotate right
+		// 2 means flip vertical, 3 means flip horizontal
+		if (type == 0) {
 			pthread_create(&(tid[i]), NULL, threadFunctionRotateLeft, &(info[i]));	
-		} else {
+		} else if (type == 1){
 			pthread_create(&(tid[i]), NULL, threadFunctionRotateRight, &(info[i]));
+		} else if (type == 2) {
+			pthread_create(&(tid[i]), NULL, threadFunctionFlipVer, &(info[i]));
+		} else {
+			pthread_create(&(tid[i]), NULL, threadFunctionFlipHor, &(info[i]));
 		}
 	}
 

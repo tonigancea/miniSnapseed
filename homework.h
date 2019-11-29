@@ -21,7 +21,7 @@ typedef struct {
 void readInput(const char * fileName, image *img);
 void writeData(const char * fileName, image *img);
 void resize(image *in, image * out, int resize_fac);
-void rotate(image *in, image * out, int direction);
+void rotate(image *in, image * out, int type);
 void copyImage(image *source, image *destination);
 
 #endif /* HOMEWORK_H */
