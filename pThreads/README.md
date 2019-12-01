@@ -1,1 +1,3 @@
 # miniSnapseed
+
+## pthreads version

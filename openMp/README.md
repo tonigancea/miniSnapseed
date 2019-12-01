@@ -1,0 +1,3 @@
+# miniSnapseed
+
+## openMp version
