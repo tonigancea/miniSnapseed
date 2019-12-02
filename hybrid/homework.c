@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include <omp.h>
 
 typedef struct {
 	char type[2];
@@ -128,6 +129,8 @@ void resize(image *in, image *out, int resize_fact, int start, int end, int newW
 	int value;
 
 	for (int c = 0; c < num_colors; c++) { 	//each color at a time
+		
+		#pragma omp parallel private(value, sum)
 		for (int i = start; i < end; i++) {
 			for (int j = 0; j < out->width; j++) {
 				
@@ -177,6 +180,7 @@ void rotate(image *in, image *out, int type, int start, int end) {
 		out->height = in->width;
 
 		for (int c = 0; c < num_colors; c++) { // for each color
+			#pragma omp parallel
 			for (int i = start; i < end; i++) { 
 				for (int j = 0; j < out->width; j++) {
 						// printf("\n\n\nHeey! %d %d %d\n\n\n",c,i,j);
@@ -191,6 +195,7 @@ void rotate(image *in, image *out, int type, int start, int end) {
 		out->height = in->width;
 
 		for (int c = 0; c < num_colors; c++) { // for each color
+			#pragma omp parallel
 			for (int i = start; i < end; i++) { 
 				for (int j = 0; j < out->width; j++) {
 						out->data[(i * out->width + j) * num_colors + c] \
@@ -201,6 +206,7 @@ void rotate(image *in, image *out, int type, int start, int end) {
 	} else if (type == 2) {
 		// flip vertical
 		for (int c = 0; c < num_colors; c++) { // for each color
+			#pragma omp parallel
 			for (int i = start; i < end; i++) { 
 				for (int j = 0; j < in->width; j++) {
 						out->data[(i * out->width + j) * num_colors + c] \
@@ -211,6 +217,7 @@ void rotate(image *in, image *out, int type, int start, int end) {
  	} else if (type == 3) {
 		 // flip horizontal
 		for (int c = 0; c < num_colors; c++) { // for each color
+			#pragma omp parallel
 			for (int i = start; i < end; i++) { 
 				for (int j = 0; j < in->width; j++) {
 						out->data[(i * out->width + j) * num_colors + c] \
@@ -389,6 +396,7 @@ int main(int argc, char * argv[]) {
 				free(input.data);
 				//writeData
 				writeData(argv[2], &output);
+				
 			} else {
 				//send the output to all other processes
 				for (int r = 0; r < nProcesses - 1; r++) {
@@ -401,7 +409,6 @@ int main(int argc, char * argv[]) {
 			}	
 		}
 	}
-
 	MPI_Finalize();
 	return 0;
 }

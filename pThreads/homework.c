@@ -22,7 +22,6 @@ int computeKernel(int mat[3][3]) {
 		}
 	}
 	return sum / 16;
-
 }
 
 void* threadFunctionRotateLeft(void *var) {
