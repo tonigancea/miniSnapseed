@@ -23,7 +23,6 @@ int main(int argc, char * argv[]) {
 			int resize_fact = atoi(argv[i+1]);
 			resize(&input, &tmp, resize_fact);
 			i += 1;
-			printf("Hehe");
 		} else if (strcmp(argv[i],"rotate_left") == 0) {
 			// 0 means rotate left
 			rotate(&input, &tmp, 0);
