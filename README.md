@@ -1,6 +1,6 @@
 # miniSnapseed
 
-With this program you can apply commands on images.
+With this program you can apply commands on `pgm` and `pnm` images.
 
 ## Supported commands:
 resize x
@@ -26,4 +26,3 @@ flip_hor
 `mpirun -np num_machines_used homework input_file output_file [commands..]`
 
 ## Enjoy coding!
-
