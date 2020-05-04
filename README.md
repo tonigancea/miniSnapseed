@@ -3,11 +3,11 @@
 With this program you can apply commands on `pgm` and `pnm` images.
 
 ## Supported commands:
-resize x
-rotate_left
-rotate_right
-flip_vert
-flip_hor
+* resize x
+* rotate_left
+* rotate_right
+* flip_vert
+* flip_hor  
 
 ## How to run:
 
